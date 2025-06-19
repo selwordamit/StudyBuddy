@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: StudyBuddy
+
+  datasource:
+    # Uses env vars if provided, otherwise falls back to defaults
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/studybuddy_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:changeme123}
+
+  jpa:
+    hibernate:
+      ddl-auto: update    # Automatically creates or updates DB schema
+    show-sql: true         # Print SQL to the console
+    open-in-view: false    # Recommended: avoids lazy loading issues in REST
+    properties:
+      hibernate:
+        format_sql: true   # Formats SQL nicely in logs
+
+jwt:
+  secret: your-256-bit-secret-key-here-make-it-at-least-32-bytes-long
