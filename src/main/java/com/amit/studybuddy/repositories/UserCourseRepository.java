@@ -1,4 +1,4 @@
-package com.amit.studybuddy.domain.repositories;
+package com.amit.studybuddy.repositories;
 
 import com.amit.studybuddy.domain.entities.UserCourse;
 import org.springframework.data.jpa.repository.JpaRepository;
