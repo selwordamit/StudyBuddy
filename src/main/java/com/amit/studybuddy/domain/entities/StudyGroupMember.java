@@ -32,5 +32,4 @@ public class StudyGroupMember {
     private LocalDateTime joinedAt;
 
 
-
 }

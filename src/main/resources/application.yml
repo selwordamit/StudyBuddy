@@ -18,4 +18,4 @@ spring:
         format_sql: true   # Formats SQL nicely in logs
 
 jwt:
-  secret: your-256-bit-secret-key-here-make-it-at-least-32-bytes-long
+  secret: TXlTZWN1cmVQYXNzd29yZEZvclN0dWR5QnVkZHkhMTk1NkA=

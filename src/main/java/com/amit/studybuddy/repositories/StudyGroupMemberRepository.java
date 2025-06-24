@@ -15,5 +15,6 @@ public interface StudyGroupMemberRepository extends JpaRepository<StudyGroupMemb
     List<StudyGroupMember> findByGroupId(UUID groupId);
     List<StudyGroupMember> findByUserId(UUID userId);
     void deleteByUserIdAndGroupId(UUID userId, UUID groupId);
+    void deleteAllByGroupId(UUID groupId);
 
 }
