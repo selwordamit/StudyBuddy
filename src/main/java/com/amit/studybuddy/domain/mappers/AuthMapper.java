@@ -1,5 +1,6 @@
 package com.amit.studybuddy.domain.mappers;
 
+
 import com.amit.studybuddy.domain.entities.User;
 import com.amit.studybuddy.domain.dtos.AuthResponse;
 import com.amit.studybuddy.domain.dtos.RegisterRequest;
@@ -17,7 +18,6 @@ public interface AuthMapper {
     @Mapping(target = "password", expression = "java(passwordEncoder.encode(request.getPassword()))")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
-
     @Mapping(target = "role", constant = "USER")
     @Mapping(target = "verified", constant = "false")
     User toUser(RegisterRequest request, @Context PasswordEncoder passwordEncoder);

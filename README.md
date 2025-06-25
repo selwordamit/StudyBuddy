@@ -11,7 +11,7 @@ StudyBuddy is a social learning platform that connects students from the same in
 - **Frontend**: React (coming soon)  
 - **Real-time**: WebSocket for group chat  
 - **Auth**: Academic email verification + JWT-based authentication  
-- **External APIs**: Zoom API, OpenAI (future integration), Email Service  
+- **External APIs**: Zoom API, Email Service  
 - **DevOps**: Docker + Swagger + CI/CD pipelines  
 
 ---

@@ -13,6 +13,7 @@ import com.amit.studybuddy.security.JwtService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -32,12 +34,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse register(RegisterRequest request) {
+        log.info("[REGISTER] - [{}] - STARTED", request.getEmail());
+
         if (userRepository.existsByEmail(request.getEmail())) {
+            log.warn("[REGISTER] - [{}] - FAILED - Email already in use", request.getEmail());
             throw new EntityExistsException("Email is already in use");
         }
 
         User user = authMapper.toUser(request, passwordEncoder);
         userRepository.save(user);
+        log.info("[REGISTER] - [{}] - SUCCESS", request.getEmail());
 
         String token = jwtService.generateToken(new UserDetailsImpl(user));
         return authMapper.toAuthResponse(user, token);
@@ -45,13 +51,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
+        log.info("[LOGIN] - [{}] - STARTED", request.getEmail());
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + request.getEmail()));
+                .orElseThrow(() -> {
+                    log.error("[LOGIN] - [{}] - FAILED - User not found", request.getEmail());
+                    return new UsernameNotFoundException("User not found with email: " + request.getEmail());
+                });
 
+        log.info("[LOGIN] - [{}] - SUCCESS", request.getEmail());
         String token = jwtService.generateToken(new UserDetailsImpl(user));
         return authMapper.toAuthResponse(user, token);
     }
