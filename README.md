@@ -1,18 +1,27 @@
+# <p align="center">
+  <img src="docs/logo.png" alt="StudyBuddy Logo" width="200"/>
+</p>
+
 # 📚 StudyBuddy – Smart Study Matching App
 
-StudyBuddy is a social learning platform that connects students from the same institution and courses based on shared learning styles and academic goals. It helps them match, chat, coordinate study sessions (online or in-person), and rate each other after meetings.
+StudyBuddy is a social learning platform that connects students from the same institution and courses based on shared learning styles and academic goals.  
+It helps them match, chat, coordinate study sessions (online or in-person), and rate each other after meetings.
 
 ---
 
+
 ## 🚀 Main Technologies
 
-- **Backend**: Spring Boot (Java) + Spring Security + JWT  
-- **Database**: PostgreSQL + JPA/Hibernate  
-- **Frontend**: React (coming soon)  
-- **Real-time**: WebSocket for group chat  
-- **Auth**: Academic email verification + JWT-based authentication  
-- **External APIs**: Zoom API, Email Service  
-- **DevOps**: Docker + Swagger + CI/CD pipelines  
+| Layer         | Technology                        |
+|---------------|-----------------------------------|
+| **Backend**   | Spring Boot, Spring Security, JWT |
+| **Database**  | PostgreSQL, JPA/Hibernate         |
+| **DevOps**    | Docker, Docker Compose            |
+| **Auth**      | Email Verification, JWT           |
+| **Docs & QA** | Swagger, Postman                  |
+| **Real-Time** | WebSocket (planned)               |
+| **External**  | Zoom API, Email Service           |
+| **Frontend**  | React (coming soon)               |
 
 ---
 
@@ -27,9 +36,22 @@ StudyBuddy is a social learning platform that connects students from the same in
 
 ---
 
+## 📄 Documentation
+
+- [📚 Functional Requirements](docs/functional-requirements.md)
+- [🛡️ Non-Functional Requirements](docs/nonfunctional-requirements.md)
+- [📊 ERD (Entity Relationship Diagram)](docs/StudyBuddyERD.png)
+
+---
+
 ## 🧪 Run Locally
 
 ```bash
 git clone https://github.com/your-username/studybuddy.git
 cd studybuddy
 ./gradlew bootRun
+
+```
+
+---
+ © 2025 Amit Or
