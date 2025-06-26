@@ -7,6 +7,9 @@ import com.amit.studybuddy.domain.dtos.RegisterRequest;
 public interface AuthService {
 
     AuthResponse register(RegisterRequest request);
-    AuthResponse login(LoginRequest request);
+    AuthResponse authenticateUser(LoginRequest request);
+    public void verifyEmail(String token);
+
+    public void resendVerificationEmail(String email);
 
 }

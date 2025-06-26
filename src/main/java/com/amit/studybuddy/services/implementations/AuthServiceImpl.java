@@ -3,22 +3,32 @@ package com.amit.studybuddy.service.impl;
 import com.amit.studybuddy.domain.dtos.AuthResponse;
 import com.amit.studybuddy.domain.dtos.LoginRequest;
 import com.amit.studybuddy.domain.dtos.RegisterRequest;
+import com.amit.studybuddy.domain.entities.Profile;
 import com.amit.studybuddy.domain.entities.User;
 
+import com.amit.studybuddy.domain.entities.VerificationToken;
 import com.amit.studybuddy.domain.mappers.AuthMapper;
+import com.amit.studybuddy.repositories.ProfileRepository;
 import com.amit.studybuddy.repositories.UserRepository;
+import com.amit.studybuddy.repositories.VerificationTokenRepository;
 import com.amit.studybuddy.security.UserDetailsImpl;
 import com.amit.studybuddy.services.AuthService;
 import com.amit.studybuddy.security.JwtService;
+import com.amit.studybuddy.services.EmailService;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +41,10 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final AuthMapper authMapper;
+    private final ProfileRepository profileRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final EmailService emailService;
+
 
     @Override
     public AuthResponse register(RegisterRequest request) {
@@ -41,21 +55,48 @@ public class AuthServiceImpl implements AuthService {
             throw new EntityExistsException("Email is already in use");
         }
 
+        if (!request.getEmail().endsWith(".ac.il") && !request.getEmail().contains("campus.ac.il")) {
+            throw new IllegalArgumentException("Only academic email addresses are allowed");
+        }
+
+        // User registration steps
         User user = authMapper.toUser(request, passwordEncoder);
         userRepository.save(user);
-        log.info("[REGISTER] - [{}] - SUCCESS", request.getEmail());
 
-        String token = jwtService.generateToken(new UserDetailsImpl(user));
-        return authMapper.toAuthResponse(user, token);
+        // Profile creation
+        Profile profile = Profile.builder()
+                .user(user)
+                .bio("")
+                .profilePictureUrl(null)
+                .location("Unknown")
+                .institution("Unknown")
+                .degree("Unknown")
+                .studyYear(0)
+                .verified(false)
+                .emailNotificationsEnabled(true)
+                .pushNotificationsEnabled(true)
+                .build();
+        profileRepository.save(profile);
+
+        // Token verification generation
+        String token = UUID.randomUUID().toString();
+        VerificationToken verificationToken = VerificationToken.builder()
+                .token(token)
+                .user(user)
+                .expiryDate(LocalDateTime.now().plusHours(24))
+                .build();
+        verificationTokenRepository.save(verificationToken);
+        // Send verification email
+        emailService.sendVerificationEmail(user, token);
+
+        // Jwt generation
+        String jwt = jwtService.generateToken(new UserDetailsImpl(user));
+        return authMapper.toAuthResponse(user, jwt);
     }
 
     @Override
-    public AuthResponse login(LoginRequest request) {
+    public AuthResponse authenticateUser(LoginRequest request) {
         log.info("[LOGIN] - [{}] - STARTED", request.getEmail());
-
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> {
@@ -63,8 +104,82 @@ public class AuthServiceImpl implements AuthService {
                     return new UsernameNotFoundException("User not found with email: " + request.getEmail());
                 });
 
-        log.info("[LOGIN] - [{}] - SUCCESS", request.getEmail());
+        Profile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Profile not found"));
+
+        if (!profile.getVerified()) {
+            log.warn("[LOGIN] - [{}] - FAILED - Email not verified", request.getEmail());
+            throw new AuthenticationCredentialsNotFoundException("Email not verified. Please check your inbox.");
+        }
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+
         String token = jwtService.generateToken(new UserDetailsImpl(user));
+        log.info("[LOGIN] - [{}] - SUCCESS", request.getEmail());
         return authMapper.toAuthResponse(user, token);
     }
+
+
+    @Override
+    public void verifyEmail(String token) {
+        log.info("[VERIFY_EMAIL] - [token={}] - STARTED", token);
+
+        VerificationToken vt = verificationTokenRepository.findByToken(token)
+                .orElseThrow(() -> {
+                    log.error("[VERIFY_EMAIL] - [token={}] - FAILED - Invalid token", token);
+                    return new IllegalArgumentException("Invalid token");
+                });
+
+        if (vt.getExpiryDate().isBefore(LocalDateTime.now())) {
+            log.warn("[VERIFY_EMAIL] - [token={}] - FAILED - Token expired", token);
+            throw new IllegalArgumentException("Token has expired");
+        }
+
+        Profile profile = profileRepository.findByUserId(vt.getUser().getId())
+                .orElseThrow(() -> {
+                    log.error("[VERIFY_EMAIL] - [userId={}] - FAILED - Profile not found", vt.getUser().getId());
+                    return new EntityNotFoundException("Profile not found");
+                });
+
+        profile.setVerified(true);
+        profileRepository.save(profile);
+        verificationTokenRepository.delete(vt);
+
+        log.info("[VERIFY_EMAIL] - [userId={}] - SUCCESS - Email verified", vt.getUser().getId());
+    }
+
+
+    @Override
+    public void resendVerificationEmail(String email) {
+        log.info("[RESEND_VERIFICATION] - [{}] - STARTED", email);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("[RESEND_VERIFICATION] - [{}] - FAILED - User not found", email);
+                    return new UsernameNotFoundException("User not found");
+                });
+
+        if (user.getVerified()) {
+            log.warn("[RESEND_VERIFICATION] - [{}] - SKIPPED - Already verified", email);
+            throw new IllegalStateException("Email already verified");
+        }
+
+        verificationTokenRepository.deleteByUserId(user.getId());
+
+        String token = UUID.randomUUID().toString();
+        VerificationToken verificationToken = VerificationToken.builder()
+                .token(token)
+                .user(user)
+                .expiryDate(LocalDateTime.now().plusHours(24))
+                .build();
+
+        verificationTokenRepository.save(verificationToken);
+        emailService.sendVerificationEmail(user, token);
+
+        log.info("[RESEND_VERIFICATION] - [{}] - SUCCESS - New token sent", email);
+    }
+
+
 }

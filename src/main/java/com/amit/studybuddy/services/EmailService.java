@@ -1,0 +1,7 @@
+package com.amit.studybuddy.services;
+
+import com.amit.studybuddy.domain.entities.User;
+
+public interface EmailService {
+    void sendVerificationEmail(User user, String token);
+}

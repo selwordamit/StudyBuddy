@@ -17,5 +17,17 @@ spring:
       hibernate:
         format_sql: true   # Formats SQL nicely in logs
 
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 948ce6c3d8b407
+    password: f534445644ae9f
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 jwt:
   secret: TXlTZWN1cmVQYXNzd29yZEZvclN0dWR5QnVkZHkhMTk1NkA=
