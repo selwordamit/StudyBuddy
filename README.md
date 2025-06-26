@@ -1,5 +1,5 @@
 # <p align="center">
-  <img src="docs/logo.png" alt="StudyBuddy Logo" width="200"/>
+  <img src="docs/Logo.png" alt="StudyBuddy Logo" width="200"/>
 </p>
 
 # 📚 StudyBuddy – Smart Study Matching App
