@@ -23,15 +23,16 @@ public class ChatMessage {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", nullable = false)
-    private StudyGroup group;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
+
+    @ManyToOne
+    @JoinColumn(name = "match_id", nullable = false)
+    private Match match;
+
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

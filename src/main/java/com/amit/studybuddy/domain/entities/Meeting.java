@@ -1,6 +1,7 @@
 package com.amit.studybuddy.domain.entities;
 
 
+import com.amit.studybuddy.domain.enums.MatchStatus;
 import com.amit.studybuddy.domain.enums.MeetingType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,12 +25,13 @@ public class Meeting {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", nullable = false)
-    private StudyGroup group;
-
     @Column(nullable = false)
     private LocalDateTime scheduledTime;
+
+    @ManyToOne
+    @JoinColumn(name = "match_id", nullable = false)
+    private Match match;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -43,5 +45,7 @@ public class Meeting {
 
     @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Rating> ratings;
+
+
 }
 

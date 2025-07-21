@@ -3,19 +3,18 @@ spring:
     name: StudyBuddy
 
   datasource:
-    # Uses env vars if provided, otherwise falls back to defaults
     url: ${DB_URL:jdbc:postgresql://localhost:5432/studybuddy_db}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:changeme123}
 
   jpa:
     hibernate:
-      ddl-auto: update    # Automatically creates or updates DB schema
-    show-sql: true         # Print SQL to the console
-    open-in-view: false    # Recommended: avoids lazy loading issues in REST
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
     properties:
       hibernate:
-        format_sql: true   # Formats SQL nicely in logs
+        format_sql: true
 
   mail:
     host: sandbox.smtp.mailtrap.io
@@ -31,3 +30,7 @@ spring:
 
 jwt:
   secret: TXlTZWN1cmVQYXNzd29yZEZvclN0dWR5QnVkZHkhMTk1NkA=
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

@@ -14,4 +14,7 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
     void deleteByUserIdAndCourseId(UUID userId, UUID courseId);
     Optional<Match> findByMatchedUserIdAndCourseId(UUID matchedUserId, UUID courseId);
 
+    Optional<Match> findFirstByUserIdOrMatchedUserId(UUID userId1, UUID userId2);
+
+
 }

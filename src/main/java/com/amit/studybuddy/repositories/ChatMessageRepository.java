@@ -14,7 +14,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, UUID> 
     Optional<ChatMessage> findByContent(String content);
 
     // Optional: אם תרצה לחפש לפי group או sender
-    List<ChatMessage> findByGroupId(UUID groupId);
+    List<ChatMessage> findByMatchId(UUID matchId);
 
     List<ChatMessage> findBySenderId(UUID senderId);
 }

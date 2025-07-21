@@ -1,6 +1,7 @@
 package com.amit.studybuddy.domain.entities;
 
 
+import com.amit.studybuddy.domain.enums.MatchStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,5 +39,10 @@ public class Match {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MatchStatus status;
+
 }
 

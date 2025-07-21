@@ -22,6 +22,11 @@ configurations {
 repositories {
     mavenCentral()
 }
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.2.5"
+    }
+}
 
 dependencies {
     // Spring Boot Core
@@ -50,6 +55,7 @@ dependencies {
 
     // Swagger / OpenAPI
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
 
     // DevTools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
