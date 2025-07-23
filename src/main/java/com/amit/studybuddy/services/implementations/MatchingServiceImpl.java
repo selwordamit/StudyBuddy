@@ -33,25 +33,34 @@ public class MatchingServiceImpl implements MatchingService {
     private final UserCourseRepository userCourseRepository;
     private final MatchRepository matchRepository;
 
+    /**
+     * Attempts to find a match for the user in the given course.
+     * If another user is waiting for the same course, a match is created.
+     * Otherwise, the current user is added to the waiting list.
+     *
+     * @param userId    the ID of the user requesting a match
+     * @param courseId  the ID of the course to match for
+     * @return an Optional Match if one is created, or Optional.empty if user is queued
+     */
     @Override
     public Optional<Match> tryMatch(UUID userId, UUID courseId) {
         log.info("[MATCH_TRY] - [userId={}] [courseId={}] - STARTED", userId, courseId);
 
-        // 1. Get User and Course entities
+        // 1. Validate user and course existence
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new IllegalArgumentException("Course not found: " + courseId));
 
-        // 2. Look for another waiting user for the same course (not this user)
+        // 2. Look for another waiting user for the same course (excluding current user)
         Optional<UserCourse> candidateOpt = userCourseRepository.findFirstByCourseIdAndUserIdNot(courseId, userId);
 
         if (candidateOpt.isPresent()) {
-            // Found a candidate to match
+            // ✅ Found a matchable candidate
             UserCourse candidate = candidateOpt.get();
             User matchedUser = candidate.getUser();
 
-            // 3. Create and save new Match
+            // 3. Create and save the new Match
             Match match = Match.builder()
                     .user(user)
                     .matchedUser(matchedUser)
@@ -62,7 +71,7 @@ public class MatchingServiceImpl implements MatchingService {
 
             matchRepository.save(match);
 
-            // 4. Remove both users from waiting list
+            // 4. Remove both users from the waiting list
             userCourseRepository.delete(candidate);
             userCourseRepository.deleteByUserIdAndCourseId(userId, courseId);
 
@@ -72,7 +81,7 @@ public class MatchingServiceImpl implements MatchingService {
             return Optional.of(match);
 
         } else {
-            // No candidates found; add user to waiting list if not already there
+            // ⚠️ No match found — user will be added to the waiting list
             if (!userCourseRepository.existsByUserIdAndCourseId(userId, courseId)) {
                 UserCourse userCourse = UserCourse.builder()
                         .user(user)
@@ -87,4 +96,5 @@ public class MatchingServiceImpl implements MatchingService {
         }
     }
 }
+
 

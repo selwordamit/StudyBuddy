@@ -1,4 +1,4 @@
-package com.amit.studybuddy.service.impl;
+package com.amit.studybuddy.services.implementations;
 
 import com.amit.studybuddy.domain.dtos.AuthResponse;
 import com.amit.studybuddy.domain.dtos.LoginRequest;
@@ -30,6 +30,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Service responsible for user authentication, registration, and email verification logic.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -45,7 +48,12 @@ public class AuthServiceImpl implements AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final EmailService emailService;
 
-
+    /**
+     * Registers a new user and sends a verification email.
+     *
+     * @param request RegisterRequest containing user registration details
+     * @return AuthResponse containing JWT token and user details
+     */
     @Override
     public AuthResponse register(RegisterRequest request) {
         log.info("[REGISTER] - [{}] - STARTED", request.getEmail());
@@ -56,14 +64,15 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (!request.getEmail().endsWith(".ac.il") && !request.getEmail().contains("campus.ac.il")) {
+            log.warn("[REGISTER] - [{}] - FAILED - Invalid academic email", request.getEmail());
             throw new IllegalArgumentException("Only academic email addresses are allowed");
         }
 
-        // User registration steps
+        // Step 1: Create and save user entity
         User user = authMapper.toUser(request, passwordEncoder);
         userRepository.save(user);
 
-        // Profile creation
+        // Step 2: Create empty profile for user
         Profile profile = Profile.builder()
                 .user(user)
                 .bio("")
@@ -78,7 +87,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         profileRepository.save(profile);
 
-        // Token verification generation
+        // Step 3: Generate and save verification token
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = VerificationToken.builder()
                 .token(token)
@@ -86,14 +95,22 @@ public class AuthServiceImpl implements AuthService {
                 .expiryDate(LocalDateTime.now().plusHours(24))
                 .build();
         verificationTokenRepository.save(verificationToken);
-        // Send verification email
+
+        // Step 4: Send verification email
         emailService.sendVerificationEmail(user, token);
 
-        // Jwt generation
+        // Step 5: Generate JWT and return response
         String jwt = jwtService.generateToken(new UserDetailsImpl(user));
+        log.info("[REGISTER] - [{}] - SUCCESS", request.getEmail());
         return authMapper.toAuthResponse(user, jwt);
     }
 
+    /**
+     * Authenticates a user using email and password and returns a JWT token.
+     *
+     * @param request LoginRequest containing login credentials
+     * @return AuthResponse containing JWT token and user details
+     */
     @Override
     public AuthResponse authenticateUser(LoginRequest request) {
         log.info("[LOGIN] - [{}] - STARTED", request.getEmail());
@@ -112,16 +129,22 @@ public class AuthServiceImpl implements AuthService {
             throw new AuthenticationCredentialsNotFoundException("Email not verified. Please check your inbox.");
         }
 
+        // Perform authentication
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
+        // Generate JWT
         String token = jwtService.generateToken(new UserDetailsImpl(user));
         log.info("[LOGIN] - [{}] - SUCCESS", request.getEmail());
         return authMapper.toAuthResponse(user, token);
     }
 
-
+    /**
+     * Verifies a user's email using a token and activates their profile.
+     *
+     * @param token verification token sent via email
+     */
     @Override
     public void verifyEmail(String token) {
         log.info("[VERIFY_EMAIL] - [token={}] - STARTED", token);
@@ -150,7 +173,11 @@ public class AuthServiceImpl implements AuthService {
         log.info("[VERIFY_EMAIL] - [userId={}] - SUCCESS - Email verified", vt.getUser().getId());
     }
 
-
+    /**
+     * Resends a new verification email to the user if not already verified.
+     *
+     * @param email user's email address
+     */
     @Override
     public void resendVerificationEmail(String email) {
         log.info("[RESEND_VERIFICATION] - [{}] - STARTED", email);
@@ -166,8 +193,10 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalStateException("Email already verified");
         }
 
+        // Remove old token (if any)
         verificationTokenRepository.deleteByUserId(user.getId());
 
+        // Generate and save new token
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = VerificationToken.builder()
                 .token(token)
@@ -176,10 +205,10 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         verificationTokenRepository.save(verificationToken);
+
+        // Send new email
         emailService.sendVerificationEmail(user, token);
 
         log.info("[RESEND_VERIFICATION] - [{}] - SUCCESS - New token sent", email);
     }
-
-
 }

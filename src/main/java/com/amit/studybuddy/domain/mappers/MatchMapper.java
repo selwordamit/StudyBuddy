@@ -12,4 +12,5 @@ public interface MatchMapper {
     @Mapping(source = "course.id", target = "courseId")
     @Mapping(source = "status", target = "status")
     MatchResponse toMatchResponse(Match match);
+
 }
