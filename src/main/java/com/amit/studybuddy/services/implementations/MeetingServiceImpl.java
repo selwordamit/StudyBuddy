@@ -4,6 +4,7 @@ import com.amit.studybuddy.domain.dtos.MeetingRequest;
 import com.amit.studybuddy.domain.dtos.MeetingResponse;
 import com.amit.studybuddy.domain.entities.Match;
 import com.amit.studybuddy.domain.entities.Meeting;
+import com.amit.studybuddy.domain.enums.MeetingType;
 import com.amit.studybuddy.domain.mappers.MeetingMapper;
 import com.amit.studybuddy.repositories.MatchRepository;
 import com.amit.studybuddy.repositories.MeetingRepository;
@@ -36,36 +37,76 @@ public class MeetingServiceImpl implements MeetingService {
      */
     @Override
     public MeetingResponse createMeeting(UUID matchId, MeetingRequest meetingRequest) {
-        log.info("[MEETING_CREATE] - [matchId={}] - STARTED", matchId);
+        log.debug("[MEETING_CREATE] - [matchId={}] - Validating match existence", matchId);
+        // Validate conditional fields based on meeting type
+        if (meetingRequest.getType() == MeetingType.ONLINE) {
+            if (meetingRequest.getZoomLink() == null || meetingRequest.getZoomLink().isBlank()) {
+                throw new IllegalArgumentException("Zoom link is required for online meetings");
+            }
+            if (meetingRequest.getLocation() != null && !meetingRequest.getLocation().isBlank()) {
+                throw new IllegalArgumentException("Location must be empty for online meetings");
+            }
+        }
 
+        if (meetingRequest.getType() == MeetingType.IN_PERSON) {
+            if (meetingRequest.getLocation() == null || meetingRequest.getLocation().isBlank()) {
+                throw new IllegalArgumentException("Location is required for in-person meetings");
+            }
+            if (meetingRequest.getZoomLink() != null && !meetingRequest.getZoomLink().isBlank()) {
+                throw new IllegalArgumentException("Zoom link must be empty for in-person meetings");
+            }
+        }
         // Check that the match exists
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> {
-                    log.warn("[MEETING_CREATE] - Match not found with ID: {}", matchId);
+                    log.warn("[MEETING_CREATE] - [matchId={}] - Match not found", matchId);
                     return new EntityNotFoundException("Match not found with id: " + matchId);
                 });
 
         // Map the request to a Meeting entity
+        log.debug("[MEETING_CREATE] - [matchId={}] - Mapping request to entity", matchId);
         Meeting meeting = meetingMapper.toEntity(meetingRequest);
         meeting.setMatch(match);
 
         // Save the meeting
         meetingRepository.save(meeting);
-
-        log.info("[MEETING_CREATE] - [matchId={}] - MEETING CREATED SUCCESSFULLY", matchId);
+        log.info("[MEETING_CREATE] - [matchId={}] - Meeting successfully created (id={})", matchId, meeting.getId());
 
         return meetingMapper.toResponse(meeting);
     }
 
     @Override
-    public List<MeetingResponse> getMeetingsByMatchId(UUID matchId) {
-        log.info("[MEETING_FETCH_ALL] - [matchId={}] - STARTED", matchId);
+    public List<MeetingResponse> getAllMeetings() {
+        log.debug("[MEETING_FETCH_ALL] - Fetching all meetings");
 
-        List<Meeting> meetings = meetingRepository.findByMatchId(matchId);
-
-        log.info("[MEETING_FETCH_ALL] - [matchId={}] - FOUND {} MEETINGS", matchId, meetings.size());
+        List<Meeting> meetings = meetingRepository.findAll();
+        log.info("[MEETING_FETCH_ALL] - Found {} meetings", meetings.size());
 
         return meetingMapper.toResponseList(meetings);
     }
+
+
+    @Override
+    public List<MeetingResponse> getMeetingsByMatchId(UUID matchId) {
+        log.debug("[MEETING_FETCH_BY_MATCH] - [matchId={}] - Retrieving meetings", matchId);
+
+        List<Meeting> meetings = meetingRepository.findByMatchId(matchId);
+        log.info("[MEETING_FETCH_BY_MATCH] - [matchId={}] - Found {} meetings", matchId, meetings.size());
+
+        return meetingMapper.toResponseList(meetings);
+    }
+    @Override
+    public void deleteMeeting(UUID meetingId) {
+        log.debug("[MEETING_DELETE] - [meetingId={}] - Validating existence", meetingId);
+
+        if (!meetingRepository.existsById(meetingId)) {
+            log.warn("[MEETING_DELETE] - [meetingId={}] - Not found", meetingId);
+            throw new EntityNotFoundException("Meeting not found with id: " + meetingId);
+        }
+
+        meetingRepository.deleteById(meetingId);
+        log.info("[MEETING_DELETE] - [meetingId={}] - SUCCESS", meetingId);
+    }
+
 
 }

@@ -29,7 +29,6 @@ public class MatchController {
     private final MatchingService matchingService;
     private final MatchMapper matchMapper;
     private final MatchRepository matchRepository;
-    @Operation(summary = "Try match", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
     public ResponseEntity<?> tryMatch(
             @RequestBody @Valid MatchRequest request,

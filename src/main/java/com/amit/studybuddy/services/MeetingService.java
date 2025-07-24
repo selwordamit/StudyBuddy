@@ -9,7 +9,10 @@ import java.util.UUID;
 
 public interface MeetingService {
     MeetingResponse createMeeting(UUID matchId, MeetingRequest meetingRequest);
+    List<MeetingResponse> getAllMeetings();
     List<MeetingResponse> getMeetingsByMatchId(UUID matchId);
+    void deleteMeeting(UUID meetingId);
+
 
 
 }

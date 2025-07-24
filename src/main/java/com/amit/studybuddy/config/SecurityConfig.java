@@ -48,7 +48,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/resend-verification").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().hasRole("USER")
+                        .anyRequest().authenticated()
+
                 )
 
                 // Add custom JWT authentication filter before default username/password auth filter

@@ -13,6 +13,9 @@ import java.util.UUID;
 public interface MeetingRepository extends JpaRepository<Meeting, UUID> {
 
         List<Meeting> findByMatchId(UUID matchId);
+        void deleteById(UUID id);
+        boolean existsById(UUID id);
+
 
 }
 
