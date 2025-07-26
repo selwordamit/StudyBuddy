@@ -18,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,9 +27,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class MatchController {
+
     private final MatchingService matchingService;
     private final MatchMapper matchMapper;
     private final MatchRepository matchRepository;
+
+    /**
+     * Attempts to match the current user to another student for a specific course.
+     */
+    @Operation(summary = "Try match")
     @PostMapping
     public ResponseEntity<?> tryMatch(
             @RequestBody @Valid MatchRequest request,
@@ -52,6 +59,10 @@ public class MatchController {
         }
     }
 
+    /**
+     * Get the first active match of the current user.
+     */
+    @Operation(summary = "Get current match")
     @GetMapping
     public ResponseEntity<?> getCurrentMatch(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         UUID userId = userDetails.getId();
@@ -66,9 +77,31 @@ public class MatchController {
             return ResponseEntity.ok(response);
         } else {
             log.info("[MATCH_GET] - [userId={}] - NO MATCH FOUND", userId);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build(); // 204
         }
     }
 
+    /**
+     * Get all matches that involve the current user (initiator or matched).
+     */
+    @Operation(summary = "Get all matches for current user")
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllUserMatches(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UUID userId = userDetails.getId();
+        log.info("[MATCH_GET_ALL] - [userId={}] - STARTED", userId);
 
+        var matches = matchingService.getAllUserMatches(userId);
+
+        if (matches.isEmpty()) {
+            log.info("[MATCH_GET_ALL] - [userId={}] - NO MATCHES FOUND", userId);
+            return ResponseEntity.noContent().build(); // 204
+        }
+
+        var responseList = matches.stream()
+                .map(matchMapper::toMatchResponse)
+                .toList();
+
+        log.info("[MATCH_GET_ALL] - [userId={}] - FOUND {} MATCHES", userId, responseList.size());
+        return ResponseEntity.ok(responseList);
+    }
 }

@@ -13,6 +13,9 @@ public interface MeetingMapper {
 
     MeetingResponse toResponse(Meeting meeting);
     @Mapping(target = "match", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "ratings", ignore = true)
+
     Meeting toEntity(MeetingRequest request);
     List<MeetingResponse> toResponseList(List<Meeting> meetings);
 

@@ -1,0 +1,112 @@
+[
+  {
+    "name": "מבוא למערכות מחשב",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 1
+  },
+  {
+    "name": "מבוא למדעי המחשב",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 1
+  },
+  {
+    "name": "מתמטיקה בדידה 1",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 1
+  },
+  {
+    "name": "אלגברה לינארית",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 1
+  },
+  {
+    "name": "מבנה נתונים",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 1
+  },
+  {
+    "name": "תכנות מונחה עצמים",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 1
+  },
+  {
+    "name": "סדנה מתקדמת בתכנות",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 1
+  },
+  {
+    "name": "מתמטיקה בדידה 2",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 1
+  },
+  {
+    "name": "חשבון אינפי 1",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 1
+  },
+  {
+    "name": "אלגוריתמים 1",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 2
+  },
+  {
+    "name": "מבוא למדעי הנתונים",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 2
+  },
+  {
+    "name": "רשתות תקשורת מחשבים",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 2
+  },
+  {
+    "name": "אלגברה 2",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 2
+  },
+  {
+    "name": "חשבון אינפי 2",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 2
+  },
+  {
+    "name": "הסתברות",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 2
+  },
+  {
+    "name": "מערכות הפעלה",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 2
+  },
+  {
+    "name": "מערכות בסיסי נתונים",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 2
+  },
+  {
+    "name": "אלגוריתמים 2",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 2
+  },
+  {
+    "name": "למידה מכונה",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 2
+  },
+  {
+    "name": "הנדסת תוכנה",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 2
+  },
+  {
+    "name": "חישוביות וסיבוכיות",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 3
+  },
+  {
+    "name": "אוטומטיים ושפות פורמליות",
+    "degree": "COMPUTER_SCIENCE",
+    "year": 3
+  }
+]

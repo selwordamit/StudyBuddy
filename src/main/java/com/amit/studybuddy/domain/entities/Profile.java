@@ -1,7 +1,9 @@
 package com.amit.studybuddy.domain.entities;
 
 
+import com.amit.studybuddy.domain.enums.DegreeType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +27,12 @@ public class Profile {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user; //
 
+    @NotNull
+    private String firstName;
+
+    @NotNull
+    private String lastName;
+
     private String bio;
     private String profilePictureUrl;
 
@@ -34,11 +42,11 @@ public class Profile {
     @Column(nullable = false)
     private String institution; // The institution the user is associated with
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String degree; // The degree the user is pursuing
+    private DegreeType degree;
 
-    @Column(nullable = false)
-    private int studyYear; // The year of study the user is currently in
+    private int studyYear;
 
     @Column(nullable = false)
     private Boolean verified; // Indicates if the profile is verified
@@ -48,7 +56,5 @@ public class Profile {
 
     @Column(nullable = false)
     private Boolean pushNotificationsEnabled; // Indicates if push notifications are enabled for the profile
-
-
 
 }

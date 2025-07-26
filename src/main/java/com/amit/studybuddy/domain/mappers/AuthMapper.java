@@ -25,7 +25,8 @@ public interface AuthMapper {
     default AuthResponse toAuthResponse(User user, String token) {
         return AuthResponse.builder()
                 .token(token)
-                .fullName(user.getFullName())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .role(user.getRole())
                 .build();
     }

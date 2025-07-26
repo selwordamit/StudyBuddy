@@ -39,7 +39,7 @@ public class EmailServiceImpl implements EmailService {
                 %s
                 
                 If you didn't register, ignore this email.
-                """, user.getFullName(), link);
+                """, user.getFirstName(), link);
 
         try {
             SimpleMailMessage message = new SimpleMailMessage();

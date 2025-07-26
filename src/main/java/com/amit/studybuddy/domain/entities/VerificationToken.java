@@ -27,6 +27,7 @@ public class VerificationToken {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Builder.Default
     private LocalDateTime expiryDate = LocalDateTime.now().plusHours(24);
 
 }
