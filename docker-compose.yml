@@ -14,7 +14,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  # בעתיד תוכל להוסיף גם את אפליקציית ה-Spring Boot כאן:
+  # בעתידן:
   # backend:
   #   build: .
   #   container_name: studybuddy-backend

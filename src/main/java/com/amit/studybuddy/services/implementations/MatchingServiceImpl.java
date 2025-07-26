@@ -74,7 +74,7 @@ public class MatchingServiceImpl implements MatchingService {
                     .status(MatchStatus.PENDING)
                     .build();
 
-            match.setStatus(MatchStatus.CONFIRMED);
+            match.setStatus(MatchStatus.COMPLETED);
             matchRepository.save(match);
 
             // 4. Remove both users from the waiting list
