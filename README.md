@@ -19,9 +19,7 @@ It helps them match, chat, coordinate study sessions (online or in-person), and 
 | **DevOps**    | Docker, Docker Compose            |
 | **Auth**      | Email Verification, JWT           |
 | **Docs & QA** | Swagger, Postman                  |
-| **Real-Time** | WebSocket (planned)               |
-| **External**  | Zoom API, Email Service           |
-| **Frontend**  | React (coming soon)               |
+             |
 
 ---
 
@@ -30,9 +28,8 @@ It helps them match, chat, coordinate study sessions (online or in-person), and 
 - Sign up using academic email only  
 - Create a personal profile with selected courses and learning preferences  
 - Automatic matching based on course and preferred group size  
-- Real-time group chat and scheduling of online/physical study sessions  
-- Automatic meeting reminders via email or in-app notifications  
-- Post-meeting peer rating (community feedback displayed on profiles)
+
+
 
 ---
 
