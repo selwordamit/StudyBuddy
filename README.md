@@ -27,7 +27,7 @@ It helps them match, chat, coordinate study sessions (online or in-person), and 
 
 - Sign up using academic email only  
 - Create a personal profile with selected courses and learning preferences  
-- Automatic matching based on course and preferred group size  
+- Automatic matching based on course 
 
 
 
