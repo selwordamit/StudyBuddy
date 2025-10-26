@@ -19,7 +19,6 @@ It helps them match, chat, coordinate study sessions (online or in-person), and 
 | **DevOps**    | Docker, Docker Compose            |
 | **Auth**      | Email Verification, JWT           |
 | **Docs & QA** | Swagger, Postman                  |
-             |
 
 ---
 
