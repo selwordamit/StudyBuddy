@@ -14,18 +14,5 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  # בעתידן:
-  # backend:
-  #   build: .
-  #   container_name: studybuddy-backend
-  #   ports:
-  #     - "8888:8080"
-  #   depends_on:
-  #     - postgres
-  #   environment:
-  #     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/studybuddy_db
-  #     SPRING_DATASOURCE_USERNAME: postgres
-  #     SPRING_DATASOURCE_PASSWORD: changeme123
-
 volumes:
   pgdata:
